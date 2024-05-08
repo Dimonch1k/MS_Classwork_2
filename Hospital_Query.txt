@@ -1,0 +1,143 @@
+
+---------- DROP TABLES ----------
+
+DROP TABLE IF EXISTS doctors_examinations;
+DROP TABLE IF EXISTS wards;
+DROP TABLE IF EXISTS donations;
+
+DROP TABLE IF EXISTS interns;
+DROP TABLE IF EXISTS diseases;
+DROP TABLE IF EXISTS professors;
+
+DROP TABLE IF EXISTS sponsors;
+DROP TABLE IF EXISTS departments;
+DROP TABLE IF EXISTS doctors;
+DROP TABLE IF EXISTS examinations;
+
+
+
+
+---------- CREATE TABLES ----------
+
+-- Teachers table
+CREATE TABLE teachers (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    name NVARCHAR(MAX) NOT NULL,
+    Surname NVARCHAR(MAX) NOT NULL
+);
+
+-- Assistants table
+CREATE TABLE assistants (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    teacher_id INT NOT NULL,
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+);
+
+-- Curators table
+CREATE TABLE curators (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    teacher_id INT NOT NULL,
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+);
+
+-- Deans table
+CREATE TABLE deans (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    teacher_id INT NOT NULL,
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+);
+
+-- Departments table
+CREATE TABLE departments (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    Building INT NOT NULL CHECK (Building BETWEEN 1 AND 5),
+    name NVARCHAR(100) NOT NULL UNIQUE,
+    faculty_id INT NOT NULL,
+    head_id INT NOT NULL,
+    FOREIGN KEY (faculty_id) REFERENCES Faculties(id),
+    FOREIGN KEY (head_id) REFERENCES Heads(id)
+);
+
+-- Faculties table
+CREATE TABLE faculties (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    Building INT NOT NULL CHECK (Building BETWEEN 1 AND 5),
+    name NVARCHAR(100) NOT NULL UNIQUE,
+    Deanid INT NOT NULL,
+    FOREIGN KEY (Deanid) REFERENCES Deans(id)
+);
+
+-- Groups table
+CREATE TABLE groups (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    name NVARCHAR(10) NOT NULL UNIQUE,
+    Year INT NOT NULL CHECK (Year BETWEEN 1 AND 5),
+    Departmentid INT NOT NULL,
+    FOREIGN KEY (Departmentid) REFERENCES Departments(id)
+);
+
+
+
+
+
+-- Heads table
+CREATE TABLE heads (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    teacher_id INT NOT NULL,
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+);
+
+-- LectureRooms table
+CREATE TABLE lecturerooms (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    building INT NOT NULL CHECK (Building BETWEEN 1 AND 5),
+    name NVARCHAR(10) NOT NULL UNIQUE
+);
+
+-- Subjects table
+CREATE TABLE subjects (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    name NVARCHAR(100) NOT NULL UNIQUE
+);
+
+
+
+-- GroupsLectures table
+CREATE TABLE groups_lectures (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    Groupid INT NOT NULL,
+    Lectureid INT NOT NULL,
+    FOREIGN KEY (Groupid) REFERENCES Groups(id),
+    FOREIGN KEY (Lectureid) REFERENCES lectures(id)
+);
+
+
+-- GroupsCurators table
+CREATE TABLE groups_curators (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    Curatorid INT NOT NULL,
+    Groupid INT NOT NULL,
+    FOREIGN KEY (Curatorid) REFERENCES Curators(id),
+    FOREIGN KEY (Groupid) REFERENCES Groups(id)
+);
+
+-- Lectures table
+CREATE TABLE lectures (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    subject_id INT NOT NULL,
+    teacher_id INT NOT NULL,
+    FOREIGN KEY (subject_id) REFERENCES subjects(id),
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+);
+
+-- Schedules table
+CREATE TABLE schedules (
+    id INT PRIMARY KEY idENTITY(1,1) NOT NULL,
+    Class INT NOT NULL CHECK (Class BETWEEN 1 AND 8),
+    DayOfWeek INT NOT NULL CHECK (DayOfWeek BETWEEN 1 AND 7),
+    Week INT NOT NULL CHECK (Week BETWEEN 1 AND 52),
+    lecture_id INT NOT NULL,
+    lecture_room_id INT NOT NULL,
+    FOREIGN KEY (lecture_id) REFERENCES Lectures(id),
+    FOREIGN KEY (lecture_room_id) REFERENCES lecturerooms(id)
+);
